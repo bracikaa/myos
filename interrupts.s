@@ -1,21 +1,23 @@
 .set IRQ_BASE, 0x20
 .section .text
-.extern _ZN10Interrupt15handleInterruptEhj
+.extern _ZN9Interrupt15HandleInterruptEhj
 
 .macro HandleException number
-.global _ZN10Interrupt16handleException\number\()Ev
+.global _ZN9Interrupt16HandleException\number\()Ev
+_ZN9Interrupt16HandleException\number\()Ev:
   movb $\number, (interruptNum)
   jmp int_bottom
  .endm
  
  .macro HandleInterruptRequest number
-.global _ZN10Interrupt26handleInterruptRequest\number\()Ev
-  movb $\numbers + IRQ_BASE, (interruptNum)
+.global _ZN9Interrupt26HandleInterruptRequest\number\()Ev
+_ZN9Interrupt26HandleInterruptRequest\number\()Ev:
+  movb $\number + IRQ_BASE, (interruptNum)
   jmp int_bottom
  .endm
 
-HandleException 0x00
-HandleException 0x01
+HandleInterruptRequest 0x00
+HandleInterruptRequest 0x01
 
 
 int_bottom:
@@ -28,7 +30,7 @@ int_bottom:
 
   pushl %esp
   push (interruptNum)
-  call _ZN10Interrupts15handleInterruptEhj
+  call _ZN9Interrupt15HandleInterruptEhj
   #addl $5, %esp
   movl %eax, %esp
   
@@ -39,6 +41,9 @@ int_bottom:
   popl %ds
   popa
 
+.global _ZN9Interrupt22IgnoreInterruptRequestEv
+_ZN9Interrupt22IgnoreInterruptRequestEv:
+  
   iret
   
   

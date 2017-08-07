@@ -1,5 +1,5 @@
-#ifndef __INTERRUPTS_H
-#define __INTERRUPTS_H
+#ifndef __INTERRUPT_H
+#define __INTERRUPT_H
 #include "sizes.h"
 #include "port.h"
 #include "gdt.h"
@@ -20,6 +20,13 @@
     
     
     static IDT idt[256];
+    
+    struct idtPointer
+    {
+      uint16_t size;
+      uint32_t base;
+    }__attribute__((packed));
+    
     static void setIDTEntry(
       uint8_t interruptNumber,
       uint16_t gdtCodeOffset,
@@ -29,12 +36,18 @@
       
     );
     
+    Port8Slow picMasterCommand;
+    Port8Slow picSlaveCommand;
+    Port8Slow picMasterData;
+    Port8Slow picSlaveData;
+    
   public:
     Interrupt(GDT* gdt);
     ~Interrupt();
     
-    static uint32_t handleInterrupt(uint8_t interruptNum, uint32_t stackPointer);
+    static uint32_t HandleInterrupt(uint8_t interruptNum, uint32_t stackPointer);
     
+    void Activate();
     
     static void IgnoreInterruptRequest();    
     //timer interupt

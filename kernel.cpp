@@ -1,5 +1,6 @@
 #include "sizes.h"
 #include "gdt.h"
+#include "idt.h"
 
 
 void printf(char* str)
@@ -59,6 +60,8 @@ extern "C" void kernelMain(const void* multiboot_structure, unsigned int magicnu
     
     
     GDT gdt;
-     
+    Interrupt idt(&gdt);
+    
+    idt.Activate();
     while(1);
 }
